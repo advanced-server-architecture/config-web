@@ -11,8 +11,8 @@ import http from '../http';
 import actionMonitor from '../middlewares/actionMonitor';
 
 const defaultState = fromJS({
-    accessToken: 'fee407e6c65c3c9b1f82276f33d8d6bc362cfe9c',
-    repo: 'hitales/templater',
+    accessToken: '',
+    repo: '',
     repos: [],
     commits: [],
     projects: [],
