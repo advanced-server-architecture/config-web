@@ -342,8 +342,8 @@ export default class extends Component {
                             case 'text':
                                 return <Input 
                                     rows={8}
-                                    value={form.content}
-                                    onChange={this.setForm('content')}
+                                    value={this.state.content}
+                                    onChange={e => this.setState({content: e.target.value})}
                                     type='textarea'/>
                         }
                     })(form.type)
