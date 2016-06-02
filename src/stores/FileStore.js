@@ -17,7 +17,6 @@ const FileStore = createStore(function(state = defaultState, action) {
     switch (action.type) {
         case 'Load':
             Global.Load();
-            console.log(action)
             http
                 .get('/admin/file/' + action.id + '/' + action.rev)
                 .then(data => {
@@ -53,7 +52,6 @@ const FileStore = createStore(function(state = defaultState, action) {
                     File.Load(action.ref);
                 })
                 .catch(err => {
-                    console.log(err);
                     Global.Loaded();
                     logger.error(err)
                     message.error(err.message);

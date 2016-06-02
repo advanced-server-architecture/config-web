@@ -219,7 +219,6 @@ export default class extends Component {
                             this.setForm('type')(e)
                             if (e.target.value === 'json' ||
                                 e.target.value === 'yaml') {
-                                console.log(content);
                                 let content = this.state.content;
                                 if (content === '') {
                                     this.setState({

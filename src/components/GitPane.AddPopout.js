@@ -62,7 +62,6 @@ export default class extends Component {
                 const dispose = GlobalStore.subscribe(e => {
                     const state = GlobalStore.getState();
                     const action = state.get('lastAction').toJSON();
-                    console.log(action)
                     if (action.source === 'GitStore' &&
                         action.type === 'SubmitResult') {
                         if (!action.error) {

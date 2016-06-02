@@ -44,7 +44,6 @@ export default class extends Component {
         key: 'deployed',
         dataIndex: 'deployed',
         render(flag) {
-            console.log(flag)
             if (!flag) {
                 return <p/>;
             } else {
