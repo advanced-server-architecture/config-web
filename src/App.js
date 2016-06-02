@@ -15,6 +15,7 @@ import * as Global from './actions/Global';
 import JsonConfigTree from './components/JsonConfigTree';
 import FilePane from './components/FilePane';
 
+import GitPane from './components/GitPane';
 
 import watch from './watch';
 
@@ -38,9 +39,14 @@ class App extends Component {
                     onChange={e => this.notifyTab(e)}
 					defaultActiveKey={this.defaultActiveKey}
 					tabPosition='top'>
+                    <Tabs.TabPane
+                        tab='发布管理'
+                        key='0'>
+                        <GitPane/>
+                    </Tabs.TabPane>
 					<Tabs.TabPane 
 						tab='配置管理'
-						key='0'>
+						key='1'>
                         <FilePane/>
 					</Tabs.TabPane>
 				</Tabs>
