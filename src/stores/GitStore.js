@@ -20,10 +20,11 @@ const defaultState = fromJS({
 });
 
 const GitStore = createStore(function(state = defaultState, action) {
-    if (action.project) {
-        state = state.set('project', fromJS(action.project));
-    }
     console.log(action)
+    if (action.project) {
+        state = state.set('project', fromJS(action.project))
+                    .set('accessToken', action.project.accessToken);
+    }
     if (action.accessToken) {
         state = state.set('accessToken', action.accessToken);
     }
@@ -131,7 +132,7 @@ const GitStore = createStore(function(state = defaultState, action) {
         case 'FetchCommits':
             Global.Load();
             git
-                .get('/repos/' + action.repo + '/commits')
+                .get('/repos/' + action.project.repo + '/commits')
                 .then(res => {
                     Global.Loaded();
                     message.success('git commtis loaded');

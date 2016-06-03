@@ -37,6 +37,8 @@ export default class extends Component {
         };
     }
     componentWillReceiveProps(props) {
+        if (this.state.visible === true &&
+            props.visible === true) return;
         this.state.visible = props.visible;
         if (props.form) {
             this.state.form = {...(props.form)};

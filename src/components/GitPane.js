@@ -87,7 +87,7 @@ export default class extends Component {
                     <Select
                         onChange={e => {
                             const project = projects[e];
-                            Git.FetchCommits(project.repo, project);
+                            Git.FetchCommits(project);
                         }}
                         placeholder='请选择Project'>
                         {projects.map((proj, key) => <Select.Option
@@ -107,7 +107,7 @@ export default class extends Component {
                     <Button 
                         onClick={e => {
                             this.setState({
-                                form: null,
+                                form: {},
                                 visible: true
                             })
                         }}

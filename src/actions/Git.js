@@ -6,10 +6,9 @@ export const FetchRepos = (accessToken) =>
         accessToken
     });
 
-export const FetchCommits = (repo, project) => 
+export const FetchCommits = (project) => 
     GitStore.dispatch({
         type: 'FetchCommits',
-        repo,
         project
     });
 
