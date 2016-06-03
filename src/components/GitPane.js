@@ -5,6 +5,7 @@ import React, {
 import watch from '../watch';
 import * as Git from '../actions/Git';
 import GitStore from '../stores/GitStore';
+import _ from 'lodash';
 
 const radioStyle = {
     display: 'block',
@@ -77,7 +78,25 @@ export default class extends Component {
     render() {
         const state = GitStore.getState();
         const deployedSha = state.get('project').get('deployedCommit')
-        const commits = state.get('commits').toJSON().map((c, key) => ({...c, key, deployed: c.sha === deployedSha}));
+        const tags = state
+            .get('tags') 
+            .toJSON()
+            .map(t => ({
+                sha: 'tags/' + t.tag_name,
+                commit: {
+                    message: t.name,
+                    author: {
+                        date: t.published_at
+                    }
+                }
+            }));
+        const commits = _.sortBy(tags.concat(
+            state
+                .get('commits')
+                .toJSON()
+            ).
+            map((c, key) => ({...c, key, deployed: c.sha === deployedSha})),
+            c => c.commit.author.date).reverse();
         const projects = state.get('projects').toJSON();
         return <Flex
             direction='column'>
@@ -88,6 +107,7 @@ export default class extends Component {
                         onChange={e => {
                             const project = projects[e];
                             Git.FetchCommits(project);
+                            Git.FetchTags(project);
                         }}
                         placeholder='请选择Project'>
                         {projects.map((proj, key) => <Select.Option

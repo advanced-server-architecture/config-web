@@ -11,6 +11,11 @@ export const FetchCommits = (project) =>
         type: 'FetchCommits',
         project
     });
+export const FetchTags = (project) => 
+    GitStore.dispatch({
+        type: 'FetchTags',
+        project
+    });
 
 export const FetchProjects = () =>
     GitStore.dispatch({

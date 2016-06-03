@@ -16,7 +16,8 @@ const defaultState = fromJS({
     repos: [],
     commits: [],
     projects: [],
-    project: {}
+    project: {},
+    tags: []
 });
 
 const GitStore = createStore(function(state = defaultState, action) {
@@ -77,6 +78,26 @@ const GitStore = createStore(function(state = defaultState, action) {
             return state;
         case 'ReceiveDeploy':
             return state.set('project', fromJS(action.data));
+        case 'FetchTags':
+            Global.Load();
+            git
+                .get('/repos/' + action.project.repo + '/releases')
+                .then(res => {
+                    Global.Loaded();
+                    message.success('git releases loaded');
+                    GitStore.dispatch({
+                        type: 'ReceiveTags',
+                        data: res.data
+                    });
+                })  
+                .catch(err => {
+                    Global.Loaded();
+                    logger.error(err);
+                    message.error('git错误');
+                });
+            return state;
+        case 'ReceiveTags':
+            return state.set('tags', fromJS(action.data));
         case 'Submit': {
             const _id = action.body._id || '';
             const body = {
