@@ -86,6 +86,19 @@ const FileStore = createStore(function(state = defaultState, action) {
                     logger.error(error);
                 })
             return state;
+        case 'Push':
+            Global.Load();
+            http
+                .get('/admin/pushfile/' + action.rev)
+                .then(data => {
+                    Global.Loaded();
+                    message.success('推送成功');
+                })
+                .catch(error => {
+                    Global.Loaded();
+                    message.error('推送失败 ' + error.message);
+                    logger.error(error);
+                })
         default:
             return state;
     }

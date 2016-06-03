@@ -349,7 +349,7 @@ export default class extends Component {
                 }
             </Flex>
             <Flex
-                width={180}
+                width={240}
                 margin='10px 0 0 0'>
                 <Flex>
                     <Button 
@@ -377,6 +377,11 @@ export default class extends Component {
                             background: '#1FD662',
                             color: '#fff'
                         }}>{disabled ? '滚动到此版本' : '保存'}
+                    </Button>
+                    <Button
+                        disabled={disabled}
+                        onClick={e => File.Push(this.state.currentRev)}>
+                        强制推送 
                     </Button>
                 </Flex>
                 {disabled ?

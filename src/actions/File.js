@@ -27,3 +27,9 @@ export const Roll = (ref, rev) =>
         ref,
         rev
     });
+
+export const Push = (rev) =>
+    FileStore.dispatch({
+        type: 'Push',
+        rev
+    });
