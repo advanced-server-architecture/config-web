@@ -23,6 +23,7 @@ const GitStore = createStore(function(state = defaultState, action) {
     if (action.project) {
         state = state.set('project', fromJS(action.project));
     }
+    console.log(action)
     if (action.accessToken) {
         state = state.set('accessToken', action.accessToken);
     }

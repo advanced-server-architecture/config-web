@@ -158,7 +158,7 @@ export default class extends Component {
                         <Flex
                             width={150}>
                             <Button 
-                                onClick={e => Git.FetchRepos(form.token)}
+                                onClick={e => Git.FetchRepos(form.accessToken)}
                                 icon='reload'>
                                 Repos</Button>
                         </Flex>
