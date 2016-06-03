@@ -19,7 +19,8 @@ import {
     Select,
     Icon,
     Button,
-    ModalG
+    ModalG,
+    Tag
 } from 'antd';
 
 import Flex from './Flex';
@@ -32,12 +33,18 @@ export default class extends Component {
     columns = [{
         title: 'SHA',
         key: 'sha',
-        dataIndex: 'sha'
+        dataIndex: 'sha',
+        render(sha, o) {
+            if (o.tag) {
+                return <div>{sha}<Tag>{o.tag.name}</Tag></div>;
+            }
+            return sha;
+        }
     }, {
         title: 'Message',
         key: 'message',
         dataIndex: 'commit',
-        render(commit) {
+        render(commit, o) {
             return commit.message;
         }
     }, {
@@ -78,25 +85,11 @@ export default class extends Component {
     render() {
         const state = GitStore.getState();
         const deployedSha = state.get('project').get('deployedCommit')
-        const tags = state
-            .get('tags') 
-            .toJSON()
-            .map(t => ({
-                sha: 'tags/' + t.tag_name,
-                commit: {
-                    message: t.name,
-                    author: {
-                        date: t.published_at
-                    }
-                }
-            }));
-        const commits = _.sortBy(tags.concat(
-            state
+        const tags = state.get('tags').toJSON().map(t => ({sha: t.commit.sha, name: t.name}));
+        const commits = state
                 .get('commits')
                 .toJSON()
-            ).
-            map((c, key) => ({...c, key, deployed: c.sha === deployedSha})),
-            c => c.commit.author.date).reverse();
+                .map((c, key) => ({...c, key, deployed: c.sha === deployedSha, tag: _.find(tags, {sha: c.sha})}));
         const projects = state.get('projects').toJSON();
         return <Flex
             direction='column'>

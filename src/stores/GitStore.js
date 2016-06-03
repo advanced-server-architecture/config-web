@@ -21,7 +21,6 @@ const defaultState = fromJS({
 });
 
 const GitStore = createStore(function(state = defaultState, action) {
-    console.log(action)
     if (action.project) {
         state = state.set('project', fromJS(action.project))
                     .set('accessToken', action.project.accessToken);
@@ -81,10 +80,10 @@ const GitStore = createStore(function(state = defaultState, action) {
         case 'FetchTags':
             Global.Load();
             git
-                .get('/repos/' + action.project.repo + '/releases')
+                .get('/repos/' + action.project.repo + '/tags')
                 .then(res => {
                     Global.Loaded();
-                    message.success('git releases loaded');
+                    message.success('git tags loaded');
                     GitStore.dispatch({
                         type: 'ReceiveTags',
                         data: res.data
