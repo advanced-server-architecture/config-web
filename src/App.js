@@ -1,59 +1,68 @@
 /*** core libs ***/
-import React, {
-	Component
-} from 'react';
+import React from 'react';
 import ReactDom from 'react-dom';
+import {
+    Router,
+    Route,
+    hashHistory
+} from 'react-router';
 
 import {
-	Tabs,
-	Spin
+    Spin
 } from 'antd';
 
+import Flex from './components/Flex';
+
+
+import Top from './views/Top';
+import AgentList from './views/AgentList';
+import Agent from './views/Agent';
+import ProjectList from './views/ProjectList';
+import Project from './views/Project';
+import Deploy from './views/Deploy';
+import NotFound from './views/NotFound';
+
 import GlobalStore from './stores/GlobalStore';
-import * as Global from './actions/Global';
-
-import JsonConfigTree from './components/JsonConfigTree';
-import FilePane from './components/FilePane';
-
-import GitPane from './components/GitPane';
-
 import watch from './watch';
 
 @watch(GlobalStore)
-class App extends Component {
-    defaultActiveKey = '0';
-	componentDidMount() {
-        this.notifyTab(this.defaultActiveKey);
-	}
-    notifyTab(index) {
-        const tab = this.refs['tab-' + index];
-        tab && tab.tabViewEntered && tab.tabViewEntered();
+class App extends React.Component {
+    render() {
+        const loading = GlobalStore.getState().get('loading');
+        return (
+            <Spin
+                size='large'
+                spinning={loading}>
+                <Flex
+                    style={{
+                        margin: 10,
+                        background: '#fff',
+                        borderRadius: 10
+                    }}
+                    direction='column'>
+                    <Top
+                        location={this.props.location.pathname}/>
+                    <Flex
+                        style={{
+                            padding: 10
+                        }}>
+                        {this.props.content}
+                    </Flex>
+                </Flex>
+            </Spin>
+        );
     }
-	render() {
-        const loggedIn = GlobalStore.getState().get('userId') !== null;
-		return (
-			<Spin 
-				size='large' 
-				spinning={GlobalStore.getState().get('loading') !== 0}>
-				<Tabs
-                    onChange={e => this.notifyTab(e)}
-					defaultActiveKey={this.defaultActiveKey}
-					tabPosition='top'>
-                    <Tabs.TabPane
-                        tab='发布管理'
-                        key='0'>
-                        <GitPane/>
-                    </Tabs.TabPane>
-					<Tabs.TabPane 
-						tab='配置管理'
-						key='1'>
-                        <FilePane/>
-					</Tabs.TabPane>
-				</Tabs>
-			</Spin>
-		);
-	}
 }
 
-
-ReactDom.render(<App/>, document.getElementById('container'));
+ReactDom.render((
+    <Router history={hashHistory}>
+        <Route path='/' component={App}>
+            <Route path='agent' components={{content: AgentList}}/>
+            <Route path='agent/:id' components={{content: Agent}}/>
+            <Route path='project' components={{content: ProjectList}}/>
+            <Route path='project/:id' components={{content: Project}}/>
+            <Route path='deploy/:agentId/:projectId' components={{content: Deploy}}/>
+            <Route path='*' components={{content: NotFound}}/>
+        </Route>
+    </Router>
+), document.getElementById('container'));

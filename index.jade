@@ -2,7 +2,7 @@ doctype html
 html
   head
     meta(charset='utf-8')
-    title Config系统
+    title 自动化
     style.
       ins {
         background-color: #cfc;
@@ -24,7 +24,10 @@ html
       .ant-tabs {
         flex: 1;
       }
-  body
+      body {
+        background: #E9E9E9;
+      }
+  body(style='background: #E9E9E9;')
     #container
     script(src='./polyfill.min.js')
     script(src='./dll.' + vendor + '.js')
