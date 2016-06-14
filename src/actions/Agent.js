@@ -12,6 +12,9 @@ export const LoadAgentUsage = (uid) =>
 export const LoadAgentProject = (uid) =>
     AgentStore.dispatch({ type: 'LoadAgentProject', uid});
 
+export const LoadAgentFileList = (uid) =>
+    AgentStore.dispatch({ type: 'LoadAgentFileList', uid});
+
 export const LoadAgentLog = (uid, size, page) =>
     AgentStore.dispatch({ type: 'LoadAgentLog', uid, size, page});
 

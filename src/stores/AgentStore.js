@@ -78,22 +78,15 @@ const AgentStore = createStore(function(state = defaultState, action) {
             const uid = action.uid;
             const list = state.get('list').toJSON();
             Global.Load();
-            Promise
-                .all([
-                    http.get(`/agent/${uid}`),
-                    http.get(`/agent/${uid}/ps`),
-                    http.get(`/agent/${uid}/list`),
-                    http.get(`/agent/${uid}/log/10/0`),
-                ])
+
+            http
+                .get(`/agent/${uid}`)
                 .then(result => {
                     Global.Loaded();
-                    const [[agent], [machine], projects, [log]] = result;
+                    const [agent] = result;
                     AgentStore.dispatch({
                         type: 'ReceiveAgent',
-                        agent,
-                        machine,
-                        projects,
-                        log
+                        agent
                     });
                     display.success(`Agent#${uid} info loaded`);
                 })
@@ -107,15 +100,7 @@ const AgentStore = createStore(function(state = defaultState, action) {
         }
         case 'ReceiveAgent':
             return state
-                .set('agent', fromJS({
-                    ...(action.agent),
-                    machine: action.machine,
-                    projects: action.projects,
-                    logs: action.log.logs,
-                    logSize: action.log.size,
-                    logPage: action.log.page,
-                    logTotal: action.log.total,
-                }))
+                .set('agent', fromJS(action.agent))
                 .set('__lastAction', '');
         case 'LoadAgentUsage':
             Global.Load();
@@ -141,6 +126,33 @@ const AgentStore = createStore(function(state = defaultState, action) {
             const agent = state
                 .get('agent')
                 .set('machine', fromJS(action.machine));
+            return state
+                .set('agent', agent)
+                .set('__lastAction', '');
+        }
+        case 'LoadAgentFileList':
+            Global.Load();
+            http
+                .get(`/agent/${action.uid}/ls`)
+                .then(fileList => {
+                    Global.Loaded();
+                    AgentStore.dispatch({
+                        type: 'ReceiveFileList',
+                        fileList
+                    });
+                    display.success(`Agent#${action.uid} file list loaded`);
+                })
+                .catch(err => {
+                    Global.Loaded();
+                    logger.error(err);
+                    display.error(err.message);
+                });
+            return state
+                .set('__lastAction', 'Load');
+        case 'ReceiveFileList': {
+            const agent = state
+                .get('agent')
+                .set('fileList', fromJS(action.fileList));
             return state
                 .set('agent', agent)
                 .set('__lastAction', '');

@@ -1,8 +1,7 @@
 import React from 'react';
 import {
     Table,
-    Button,
-    Icon
+    Button
 } from 'antd';
 import moment from 'moment';
 import { dateFormat } from '../../config';
@@ -10,32 +9,31 @@ import {
     withRouter
 } from 'react-router';
 
-import ProjectStore from '../stores/ProjectStore';
-import * as Project from '../actions/Project';
+import FileStore from '../stores/FileStore';
+import * as File from '../actions/File';
 
 import Flex from '../components/Flex';
-
 import watch from '../watch';
 
 @withRouter
-@watch(ProjectStore)
-export default class ProjectList extends React.Component {
+@watch(FileStore)
+export default class FileList extends React.Component {
     columns = [{
         title: 'ID',
-        dataIndex: '_id'
+        dataIndex: 'ref'
     }, {
-        title: <span><Icon type='github'/> Repo</span>,
-        dataIndex: 'repo'
+        title: 'name',
+        dataIndex: 'name'
     }, {
-        title: 'Created At',
+        title: 'lastUpdate',
         dataIndex: 'createdAt',
         render(date) {
-            return moment(date).format(dateFormat);
+            return moment (date).format(dateFormat);
         }
     }, {
         title: '',
         key: 'x',
-        render: (__null__, data) => {
+        render: (__null__, file) => {
             const router = this.props.router;
             return <div>
                 <span
@@ -43,7 +41,7 @@ export default class ProjectList extends React.Component {
                         padding: 5
                     }}>
                     <Button
-                        onClick={e => router.push(`/project/${data._id}`)}
+                        onClick={e => router.push(`file/${file.ref}/null`)}
                         icon='search'/>
                 </span>
                 <span
@@ -51,46 +49,48 @@ export default class ProjectList extends React.Component {
                         padding: 5
                     }}>
                     <Button
-                        onClick={e => router.push(`/deploy/null/${data._id}`)}
-                        icon='plus'/>
+                        onClick={e => router.push(`pushfile/null/${file.ref}/null`)}
+                        icon='upload'/>
                 </span>
-            </div>
+        </div>
         }
     }];
 
     componentDidMount() {
-        Project.LoadList();
+        File.LoadList();
     }
     render() {
         const router = this.props.router;
-        const store = ProjectStore.getState();
+        const store = FileStore.getState();
         const list = store
                 .get('list')
                 .toJSON()
-                .map((p, key) => ({...p, key }));
+                .map((f, key) => ({...f, key}));
         return <Flex
             direction='column'>
-            <Flex
-                width={180}
-                justify='space-between'
-                margin='0 0 10px 0'>
+            <Flex>
                 <Button
                     icon='reload'
-                    onClick={e => Project.LoadList()}>
+                    onClick={e => File.LoadList()}>
                     Refresh
                 </Button>
                 <Button
+                    style={{
+                        marginLeft: 10
+                    }}
                     icon='plus'
-                    onClick={e => router.push(`/project/new`)}>
-                    New
+                    onClick={e => router.push(`/file/null`)}>
+                    Add File
                 </Button>
             </Flex>
             <Flex
+                margin='10px 0 0 0'
                 direction='column'>
                 <Table
+                    bordered
+                    pagination={false}
                     dataSource={list}
-                    columns={this.columns}
-                    bordered/>
+                    columns={this.columns}/>
             </Flex>
         </Flex>
     }

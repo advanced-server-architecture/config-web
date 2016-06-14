@@ -7,7 +7,7 @@ import {
 import {
     withRouter
 } from 'react-router';
-
+import { dateFormat } from '../../config';
 import moment from 'moment';
 import filesize from 'filesize';
 
@@ -36,7 +36,7 @@ export default class AgentList extends React.Component {
             return a.lastOnline - b.lastOnline;
         },
         render(date) {
-            return moment(date).format('YYYY-MM-DD hh:mm:ss');
+            return moment(date).format(dateFormat);
         }
     }, {
         title: 'Status',
@@ -88,6 +88,14 @@ export default class AgentList extends React.Component {
                     <Button
                         onClick={e => router.push(`/deploy/${node.uid}/null`)}
                         icon='plus'/>
+                </span>
+                <span
+                    style={{
+                        padding: 5
+                    }}>
+                    <Button
+                        onClick={e => router.push(`/pushfile/${node.uid}/null/null`)}
+                        icon='upload'/>
                 </span>
             </div>
         }

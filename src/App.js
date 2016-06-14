@@ -8,8 +8,10 @@ import {
 } from 'react-router';
 
 import {
-    Spin
+    Spin,
+    LocaleProvider
 } from 'antd';
+import enUS from 'antd/lib/locale-provider/en_US';
 
 import Flex from './components/Flex';
 
@@ -20,6 +22,9 @@ import Agent from './views/Agent';
 import ProjectList from './views/ProjectList';
 import Project from './views/Project';
 import Deploy from './views/Deploy';
+import FileList from './views/FileList';
+import File from './views/File';
+import PushFile from './views/PushFile';
 import NotFound from './views/NotFound';
 
 import GlobalStore from './stores/GlobalStore';
@@ -33,22 +38,24 @@ class App extends React.Component {
             <Spin
                 size='large'
                 spinning={loading}>
-                <Flex
-                    style={{
-                        margin: 10,
-                        background: '#fff',
-                        borderRadius: 10
-                    }}
-                    direction='column'>
-                    <Top
-                        location={this.props.location.pathname}/>
+                <LocaleProvider locale={enUS}>
                     <Flex
                         style={{
-                            padding: 10
-                        }}>
-                        {this.props.content}
+                            margin: 10,
+                            background: '#fff',
+                            borderRadius: 10
+                        }}
+                        direction='column'>
+                        <Top
+                            location={this.props.location.pathname}/>
+                        <Flex
+                            style={{
+                                padding: 10
+                            }}>
+                            {this.props.content}
+                        </Flex>
                     </Flex>
-                </Flex>
+                </LocaleProvider>
             </Spin>
         );
     }
@@ -62,6 +69,9 @@ ReactDom.render((
             <Route path='project' components={{content: ProjectList}}/>
             <Route path='project/:id' components={{content: Project}}/>
             <Route path='deploy/:agentId/:projectId' components={{content: Deploy}}/>
+            <Route path='file' components={{content: FileList}}/>
+            <Route path='file/:ref/:id' components={{content: File}}/>
+            <Route path='pushfile/:agentId/:ref/:id' components={{content: PushFile}}/>
             <Route path='*' components={{content: NotFound}}/>
         </Route>
     </Router>

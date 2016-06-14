@@ -57,6 +57,10 @@ export default class Top extends React.Component {
                             <Icon type='github'/>
                             PROJECTS
                         </Menu.Item>
+                        <Menu.Item key='/file'>
+                            <Icon type='paper-clip'/>
+                            FILES
+                        </Menu.Item>
                     </Menu>
                 </Flex>
             </Flex>

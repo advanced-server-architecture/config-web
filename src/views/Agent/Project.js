@@ -10,6 +10,7 @@ import _ from 'lodash';
 
 import DeployProject from './DeployProject';
 
+import { dateFormat } from '../../../config';
 import Flex from '../../components/Flex';
 
 export default class ProjectTable extends React.Component {
@@ -36,7 +37,7 @@ export default class ProjectTable extends React.Component {
             title: 'Created At',
             dataIndex: 'createdAt',
             render(createdAt) {
-                return moment(createdAt).format('YYYY-MM-DD hh:mm:ss');
+                return moment(createdAt).format(dateFormat);
             }
         }, {
             title: 'Status',

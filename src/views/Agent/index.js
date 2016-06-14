@@ -7,6 +7,7 @@ import {
     Select
 } from 'antd';
 import moment from 'moment';
+import { dateFormat } from '../../../config';
 import _ from 'lodash';
 import {
     withRouter
@@ -17,6 +18,7 @@ import {
     LoadAgentLog,
     LoadAgentUsage,
     LoadAgentProject,
+    LoadAgentFileList,
     StartProject,
     StopProject,
     KillProject
@@ -31,6 +33,7 @@ import Usage from './Usage';
 import Process from './Process';
 import Project from './Project';
 import Log from './Log';
+import AgentFileList from './FileList';
 
 
 @withRouter
@@ -39,6 +42,10 @@ export default class Agent extends React.Component {
 
     componentDidMount() {
         LoadAgent(this.props.params.id);
+        LoadAgentFileList(this.props.params.id);
+        LoadAgentUsage(this.props.params.id);
+        LoadAgentProject(this.props.params.id);
+        LoadAgentLog(this.props.params.id, 10, 0);
     }
 
     render() {
@@ -76,6 +83,8 @@ export default class Agent extends React.Component {
         const logSize = agent.logSize || 10;
         const logPage = agent.logPage || 0;
         const logTotal = agent.logTotal || 0;
+
+        const fileList = (agent.fileList || []).map((f, key) => ({...f, key}));
 
         return (
             <Flex
@@ -122,20 +131,20 @@ export default class Agent extends React.Component {
                             fontWeight: 700
                         }}
                         justify='flex-end'>
-                        {moment(lastOnline).format('YYYY-MM-DD hh:mm:ss')}
+                        {moment(lastOnline).format(dateFormat)}
                     </Flex>
                 </Flex>
                 <Collapse
-                    defaultActiveKey={['usage','process','project', 'log']}>
+                    defaultActiveKey={['usage','process','project', 'log', 'fileList']}>
                     <Collapse.Panel
                         key='usage'
                         header='Usage'>
                         <Flex
                             margin='0 0 10px 10px'>
                             <Button
-                                onClick={e => LoadAgentUsage(this.props.params.id)}
+                                onClick={e => LoadAgentFileList(this.props.params.id)}
                                 style={{
-                                    background: '#9CCC65',
+                                    background: '#64B5F6',
                                     color: '#fff'
                                 }}>Refresh</Button>
                         </Flex>
@@ -162,7 +171,7 @@ export default class Agent extends React.Component {
                             <Button
                                 onClick={e => LoadAgentUsage(this.props.params.id)}
                                 style={{
-                                    background: '#9CCC65',
+                                    background: '#64B5F6',
                                     color: '#fff'
                                 }}>Refresh</Button>
                         </Flex>
@@ -178,7 +187,7 @@ export default class Agent extends React.Component {
                             <Button
                                 onClick={e => LoadAgentProject(this.props.params.id)}
                                 style={{
-                                    background: '#9CCC65',
+                                    background: '#64B5F6',
                                     color: '#fff'
                                 }}>Refresh</Button>
                             <Button
@@ -195,6 +204,28 @@ export default class Agent extends React.Component {
                             onKill={data => KillProject(uid, data.name)}
                             uid={uid}
                             data={projectList}/>
+                    </Collapse.Panel>
+                    <Collapse.Panel
+                        key='fileList'
+                        header='Files'>
+                        <Flex
+                            margin='0 0 10px 10px'>
+                            <Button
+                                onClick={e => LoadAgentProject(this.props.params.id)}
+                                style={{
+                                    background: '#64B5F6',
+                                    color: '#fff'
+                                }}>Refresh</Button>
+                            <Button
+                                onClick={e => router.push(`pushfile/${uid}/null/null`)}
+                                style={{
+                                    marginLeft: 10,
+                                    background: '#9CCC65',
+                                    color: '#fff'
+                                }}>Add</Button>
+                        </Flex>
+                        <AgentFileList
+                            data={fileList}/>
                     </Collapse.Panel>
                     <Collapse.Panel
                         key='log'

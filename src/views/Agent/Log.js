@@ -3,6 +3,7 @@ import {
     Tag
 } from 'antd';
 import moment from 'moment';
+import { dateFormat } from '../../../config';
 
 import Flex from '../../components/Flex';
 
@@ -54,7 +55,7 @@ const Log = (props) => {
                         color: '#fff',
                         background: '#A1887F'
                     }}>
-                    {moment(log.time).format('YYYY-MM-DD hh:mm:ss.SSS')}
+                    {moment(log.time).format(dateFormat + '.SSS')}
                 </Tag>
             </Flex>
             <Flex

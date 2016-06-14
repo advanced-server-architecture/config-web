@@ -28,8 +28,9 @@ const radioStyle = {
 @watch(AgentStore, ProjectStore)
 export default class Deploy extends React.Component {
 
-    initState(props) {
-        const params = this.props.params;
+    constructor(props) {
+        super(props);
+        const params = props.params;
         this.state = {
             agentId: params.agentId,
             projectId: params.projectId,
@@ -37,15 +38,6 @@ export default class Deploy extends React.Component {
             argument: '',
             command: ''
         };
-    }
-
-    constructor(props) {
-        super(props);
-        this.initState(props);
-    }
-
-    componentWillReceiveProps(props) {
-        this.initState(props);
     }
 
     didReceiveState() {
@@ -186,7 +178,7 @@ export default class Deploy extends React.Component {
                         return;
                     }
                     InitProject(form);
-                }}>推送</Button>
+                }}>Add</Button>
         </Flex>
     }
 }
