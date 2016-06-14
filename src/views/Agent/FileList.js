@@ -8,7 +8,8 @@ import {
     Select
 } from 'antd';
 import {
-    withRouter
+    withRouter,
+    Link
 } from 'react-router';
 import _ from 'lodash';
 
@@ -25,9 +26,19 @@ export default class AgentFileList extends React.Component {
         const columns = [{
             title: 'ID',
             dataIndex: 'ref',
+            render(ref) {
+                return <Link to={`file/${ref}/null`}>
+                    {ref}
+                </Link>
+            }
         }, {
             title: 'Rev',
-            dataIndex: '_id'
+            dataIndex: '_id',
+            render(id, data) {
+                return <Link to={`file/${data.ref}/${id}`}>
+                    {id}
+                </Link>
+            }
         }, {
             title: 'Location',
             dataIndex: 'name'

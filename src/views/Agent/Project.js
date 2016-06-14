@@ -6,6 +6,9 @@ import {
     Button,
     Select
 } from 'antd';
+import {
+    Link
+} from 'react-router';
 import _ from 'lodash';
 
 import DeployProject from './DeployProject';
@@ -23,7 +26,11 @@ export default class ProjectTable extends React.Component {
             dataIndex: 'pid',
         }, {
             title: 'Name',
-            dataIndex: 'name'
+            dataIndex: 'name',
+            render(name, data) {
+                return <Link to={`project/${data.opts._id}`}>
+                    {name}</Link>
+            }
         }, {
             title: 'Location',
             dataIndex: 'location'
