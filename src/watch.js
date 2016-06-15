@@ -9,6 +9,9 @@ export default function(...stores) {
             this.__dispose = this.__dispose || [];
             for (let Store of stores) {
                 this.__dispose.push(Store.subscribe(() => {
+                    if (Store.getState().get('__lastAction') === 'Load') {
+                        return;
+                    }
                     this.setState({__t: this.__t + 1});
                     if (super.didReceiveState) {
                         super.didReceiveState(Store, Store.getState());

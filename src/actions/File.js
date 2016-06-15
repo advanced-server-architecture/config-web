@@ -1,35 +1,32 @@
 import FileStore from '../stores/FileStore';
 
-export const Load = (id, rev = '', history = [], isAncientRev = false) =>
+export const LoadList = () =>
     FileStore.dispatch({
-        type: 'Load',
-        id,
-        rev,
-        history,
-        isAncientRev
+        type: 'LoadList'
     });
 
-export const Save = (id, body) =>
+export const LoadFile = (ref) =>
     FileStore.dispatch({
-        type: 'Save',
-        id,
+        type: 'LoadFile',
+        ref
+    });
+
+export const LoadRevision = (ref, id) =>
+    FileStore.dispatch({
+        type: 'LoadRevision',
+        ref,
+        id
+    });
+
+export const SaveFile = (ref, body) =>
+    FileStore.dispatch({
+        type: 'SaveFile',
+        ref,
         body
     });
 
-export const New = () =>
+export const PushFile = (body) =>
     FileStore.dispatch({
-        type: 'New'
-    });
-
-export const Roll = (ref, rev) =>
-    FileStore.dispatch({
-        type: 'Roll',
-        ref,
-        rev
-    });
-
-export const Push = (rev) =>
-    FileStore.dispatch({
-        type: 'Push',
-        rev
+        type: 'PushFile',
+        body
     });

@@ -42,12 +42,6 @@ export default class extends Component {
         if (this.props.style) {
             style = _.extend(style, this.props.style);
         }
-        let props = {};
-        for (const key in this.props) {
-            if (key.substr(0, 2) === 'on') {
-                props[key] = this.props[key];
-            }
-        }
-        return <div style={style} {...props}>{this.props.children}</div>;
+        return <div style={style}>{this.props.children}</div>;
     }
 }

@@ -1,108 +1,161 @@
-import { createStore } from 'redux';
-import { fromJS } from 'immutable';
+import {
+    createStore
+} from 'redux';
+
+import {
+    fromJS
+} from 'immutable';
+
+import {
+    hashHistory
+} from 'react-router';
 
 import * as Global from '../actions/Global';
-import * as FileList from '../actions/FileList';
-import * as File from '../actions/File';
+import * as Agent from '../actions/Agent';
+import * as display from '../libs/display';
 import http from '../http';
-import { message } from 'antd';
 import logger from '../logger';
 
 const defaultState = fromJS({
-    _id: null 
+    list: [],
+    file: {},
+    history: [],
+    __lastAction: '',
+    __tag: ''
 });
 
 const FileStore = createStore(function(state = defaultState, action) {
-    const list = state.get('list');
     switch (action.type) {
-        case 'Load':
+        case 'LoadList':
             Global.Load();
             http
-                .get('/admin/file/' + action.id + '/' + action.rev)
-                .then(data => {
+                .get('/admin/file')
+                .then(list => {
                     Global.Loaded();
+                    display.success('file list loaded');
                     FileStore.dispatch({
-                        type: 'ReceiveLoad',
-                        data: data[0],
-                        isAncientRev: action.isAncientRev,
-                        history: action.history
+                        type: 'ReceiveList',
+                        list
                     });
-                    message.info('file loaded');
                 })
                 .catch(err => {
                     Global.Loaded();
                     logger.error(err);
-                    message.error(err.message);
+                    display.error(err);
                 });
-            return state;
-        case 'ReceiveLoad':
-            return fromJS({
-                history: action.history,
-                isAncientRev: action.isAncientRev,
-                ...(action.data)
-            });
-        case 'Roll':
+            return state
+                .set('__lastAction', 'Load');
+        case 'ReceiveList':
+            return state
+                .set('list', fromJS(action.list))
+                .set('__lastAction', '');
+        case 'LoadFile':
+            if (action.ref === 'null') {
+                return state
+                    .set('file', fromJS({
+                        name: '',
+                        ref: '',
+                        _id: '',
+                        content: ''
+                    }))
+                    .set('__lastAction', 'set');
+            }
             Global.Load();
             http
-                .put('/admin/file/' + action.ref + '/' + action.rev)
-                .then(data => {
+                .get(`/admin/file/${action.ref}`)
+                .then(list => {
                     Global.Loaded();
-                    message.success('保存成功');
-                    FileList.Load();
-                    File.Load(action.ref);
+                    const [f] = list;
+                    const history = f.history;
+                    let file = {...f};
+                    delete file.history;
+                    display.success('file loaded');
+                    FileStore.dispatch({
+                        type: 'ReceiveFile',
+                        file,
+                        history
+                    });
                 })
                 .catch(err => {
                     Global.Loaded();
-                    logger.error(err)
-                    message.error(err.message);
+                    logger.error(err);
+                    display.error(err);
                 });
-            return state;
-        case 'New':
-            return fromJS({
-                _id: '',
-                name: '',
-                path: '',
-                type: 'text',
-                text: '',
-                isAncientRev: '',
-                history: [],
-                commands: [],
-                ref: ''
-            });
-        case 'Save':
-            Global.Load();
-            http 
-                .post('/admin/file/' + action.id)
-                .send(action.body)
-                .then(data => {
-                    Global.Loaded();
-                    message.success('保存成功');
-                    FileList.Load();
-                    File.Load(data[0].ref);
-                })
-                .catch(error => {
-                    Global.Loaded();
-                    message.error('保存失败 ' + error.message);
-                    logger.error(error);
-                })
-            return state;
-        case 'Push':
+            return state
+                .set('__lastAction', 'Load');
+        case 'ReceiveFile':
+            return state
+                .set('file', fromJS(action.file))
+                .set('history', fromJS(action.history))
+                .set('__lastAction', 'set')
+                .set('__tag', 'LoadFile');
+        case 'LoadRevision':
             Global.Load();
             http
-                .get('/admin/pushfile/' + action.rev)
-                .then(data => {
+                .get(`/admin/file/${action.ref}/${action.id}`)
+                .then(list => {
                     Global.Loaded();
-                    message.success('推送成功');
+                    const [file] = list;
+                    display.success('file revision loaded');
+                    FileStore.dispatch({
+                        type: 'ReceiveRevision',
+                        file
+                    });
                 })
-                .catch(error => {
+                .catch(err => {
                     Global.Loaded();
-                    message.error('推送失败 ' + error.message);
-                    logger.error(error);
+                    logger.error(err);
+                    display.error(err);
+                });
+            return state
+                .set('__lastAction', 'Load')
+                .set('__tag', '');
+        case 'ReceiveRevision':
+            return state
+                .set('file', fromJS(action.file))
+                .set('__lastAction', 'set')
+                .set('__tag', '');
+        case 'SaveFile':
+            Global.Load();
+            http
+                .post(`/admin/file/${action.ref}`)
+                .send(action.body)
+                .then(list => {
+                    Global.Loaded();
+                    display.success('file saved');
+                    const [file] = list;
+                    FileStore.dispatch({
+                        type: 'LoadFile',
+                        ref: file.ref
+                    });
                 })
+                .catch(err => {
+                    Global.Loaded();
+                    logger.error(err);
+                    display.error(err);
+                });
+            return state
+                .set('__lastAction', 'Load');
+        case 'PushFile':
+            Global.Load();
+            http
+                .post('/admin/pushfile')
+                .send(action.body)
+                .then(result => {
+                    Global.Loaded();
+                    display.success('file pushed');
+                    hashHistory.push(`agent/${action.body.agentId}`);
+                })
+                .catch(err => {
+                    Global.Loaded();
+                    logger.error(err);
+                    display.error(err);
+                });
+            return state
+                .set('__lastAction', 'Load');
         default:
             return state;
     }
 });
 
-FileStore.name = 'FileStore';
 export default FileStore;
