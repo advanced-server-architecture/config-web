@@ -228,7 +228,7 @@ const AgentStore = createStore(function(state = defaultState, action) {
                     Global.Loaded();
                     display.success(`successfully started ${action.name}`)
                     AgentStore.dispatch({
-                        type: 'LoadAgent',
+                        type: 'LoadAgentProject',
                         uid: action.uid
                     });
                 })
@@ -247,7 +247,7 @@ const AgentStore = createStore(function(state = defaultState, action) {
                     Global.Loaded();
                     display.success(`successfully stopped ${action.pid}`)
                     AgentStore.dispatch({
-                        type: 'LoadAgent',
+                        type: 'LoadAgentProject',
                         uid: action.uid
                     });
                 })
@@ -266,7 +266,7 @@ const AgentStore = createStore(function(state = defaultState, action) {
                     Global.Loaded();
                     display.success(`successfully killed ${action.name}`)
                     AgentStore.dispatch({
-                        type: 'LoadAgent',
+                        type: 'LoadAgentProject',
                         uid: action.uid
                     });
                 })
