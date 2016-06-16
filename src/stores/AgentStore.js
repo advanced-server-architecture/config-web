@@ -37,13 +37,19 @@ const AgentStore = createStore(function(state = defaultState, action) {
                 .set('__lastAction', 'Load');
         case 'ReceiveList': {
             Global.Load();
-            const all = action.list.map(i =>
+            const all = action.list.filter(i => i.online).map(i =>
                 http.get('/agent/' + i.uid + '/mem'));
             Promise
                 .all(all)
                 .then(result => {
                     Global.Loaded();
-                    let list = action.list;
+                    let list = action.list.map(i => ({
+                        ...i,
+                        memory: {
+                            freemem: 0,
+                            totalmem: 0
+                        }
+                    }));
                     for (const m of result) {
                         let mem = _.find(list, {uid: m[0].uid});
                         mem.memory = m[0];
