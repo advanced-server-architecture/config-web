@@ -81,9 +81,9 @@ export default class PushFile extends React.Component {
                         onChange={e => this.setState({ agentId: e })}
                         value={state.agentId}>
                         {agentList.map((agent, i) => <Select.Option
-                            value={agent.uid}
+                            value={agent._id}
                             key={i}>
-                            {agent.name}#{agent.uid}
+                            {agent.name}#{agent._id}
                         </Select.Option>)}
                     </Select>
                     <Flex

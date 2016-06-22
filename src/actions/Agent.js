@@ -18,11 +18,11 @@ export const LoadAgentFileList = (uid) =>
 export const LoadAgentLog = (uid, size, page) =>
     AgentStore.dispatch({ type: 'LoadAgentLog', uid, size, page});
 
-export const StartProject = (uid, name) =>
-    AgentStore.dispatch({ type: 'StartProject', uid, name});
+export const StartProject = (uid, _id) =>
+    AgentStore.dispatch({ type: 'StartProject', uid, _id});
 
-export const StopProject = (uid, pid) =>
-    AgentStore.dispatch({ type: 'StopProject', uid, pid});
+export const StopProject = (uid, _id) =>
+    AgentStore.dispatch({ type: 'StopProject', uid, _id});
 
-export const KillProject = (uid, name) =>
-    AgentStore.dispatch({ type: 'KillProject', uid, name});
+export const KillProject = (uid, _id) =>
+    AgentStore.dispatch({ type: 'KillProject', uid, _id});

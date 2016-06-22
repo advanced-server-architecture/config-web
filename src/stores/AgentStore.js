@@ -20,6 +20,9 @@ const AgentStore = createStore(function(state = defaultState, action) {
             Global.Load();
             http
                 .get('/agent')
+                .query({
+                    fields: 'info.memory'
+                })
                 .then(list => {
                     Global.Loaded();
                     AgentStore.dispatch({
@@ -35,56 +38,18 @@ const AgentStore = createStore(function(state = defaultState, action) {
                 });
             return state
                 .set('__lastAction', 'Load');
-        case 'ReceiveList': {
-            Global.Load();
-            const all = action.list.filter(i => i.online).map(i =>
-                http.get('/agent/' + i.uid + '/mem'));
-            Promise
-                .all(all)
-                .then(result => {
-                    Global.Loaded();
-                    let list = action.list.map(i => ({
-                        ...i,
-                        memory: {
-                            freemem: 0,
-                            totalmem: 0
-                        }
-                    }));
-                    for (const m of result) {
-                        let mem = _.find(list, {uid: m[0].uid});
-                        mem.memory = m[0];
-                    }
-                    AgentStore.dispatch({
-                        type: 'ReceiveListMemory',
-                        list
-                    });
-                })
-                .catch(err => {
-                    Global.Loaded();
-                    logger.error(err);
-                    display.error(err.message);
-                });
+        case 'ReceiveList':
             return state
                 .set('list', fromJS(
                     action.list.map(i => ({
-                        ...i,
-                        memory: {
-                            freemem: 0,
-                            totalmem: 0
-                        }
+                        ...i
                     }))
                 ))
-                .set('__lastAction', '');
-        }
-        case 'ReceiveListMemory':
-            return state
-                .set('list', fromJS(action.list))
                 .set('__lastAction', '');
         case 'LoadAgent': {
             const uid = action.uid;
             const list = state.get('list').toJSON();
             Global.Load();
-
             http
                 .get(`/agent/${uid}`)
                 .then(result => {
@@ -111,13 +76,13 @@ const AgentStore = createStore(function(state = defaultState, action) {
         case 'LoadAgentUsage':
             Global.Load();
             http
-                .get(`/agent/${action.uid}/ps`)
+                .get(`/agent/${action.uid}/machine`)
                 .then(result => {
                     Global.Loaded();
-                    const [machine] = result;
+                    const [{info}] = result;
                     AgentStore.dispatch({
                         type: 'ReceiveAgentUsage',
-                        machine
+                        info
                     });
                     display.success(`Agent#${action.uid} usage loaded`);
                 })
@@ -131,7 +96,7 @@ const AgentStore = createStore(function(state = defaultState, action) {
         case 'ReceiveAgentUsage': {
             const agent = state
                 .get('agent')
-                .set('machine', fromJS(action.machine));
+                .set('info', fromJS(action.info));
             return state
                 .set('agent', agent)
                 .set('__lastAction', '');
@@ -139,12 +104,13 @@ const AgentStore = createStore(function(state = defaultState, action) {
         case 'LoadAgentFileList':
             Global.Load();
             http
-                .get(`/agent/${action.uid}/ls`)
-                .then(fileList => {
+                .get(`/agent/${action.uid}/file`)
+                .then(result => {
                     Global.Loaded();
+                    const [{file}] = result;
                     AgentStore.dispatch({
                         type: 'ReceiveFileList',
-                        fileList
+                        file
                     });
                     display.success(`Agent#${action.uid} file list loaded`);
                 })
@@ -158,7 +124,7 @@ const AgentStore = createStore(function(state = defaultState, action) {
         case 'ReceiveFileList': {
             const agent = state
                 .get('agent')
-                .set('fileList', fromJS(action.fileList));
+                .set('fileList', fromJS(action.file));
             return state
                 .set('agent', agent)
                 .set('__lastAction', '');
@@ -166,12 +132,13 @@ const AgentStore = createStore(function(state = defaultState, action) {
         case 'LoadAgentProject':
             Global.Load();
             http
-                .get(`/agent/${action.uid}/list`)
-                .then(projects => {
+                .get(`/agent/${action.uid}/project`)
+                .then(result => {
                     Global.Loaded();
+                    const [{project}] = result;
                     AgentStore.dispatch({
                         type: 'ReceiveAgentProject',
-                        projects
+                        project
                     });
                     display.success(`Agent#${action.uid} projects loaded`);
                 })
@@ -185,7 +152,7 @@ const AgentStore = createStore(function(state = defaultState, action) {
         case 'ReceiveAgentProject': {
             const agent = state
                 .get('agent')
-                .set('projects', fromJS(action.projects));
+                .set('projectList', fromJS(action.project));
             return state
                 .set('agent', agent)
                 .set('__lastAction', '');
@@ -217,7 +184,7 @@ const AgentStore = createStore(function(state = defaultState, action) {
             const agent = state
                 .get('agent')
                 .set('logs', fromJS(
-                    log.logs
+                    log.log
                 ))
                 .set('logSize', log.size)
                 .set('logPage', log.page)
@@ -229,10 +196,10 @@ const AgentStore = createStore(function(state = defaultState, action) {
         case 'StartProject':
             Global.Load();
             http
-                .get(`/agent/${action.uid}/start/${action.name}`)
+                .get(`/agent/${action.uid}/start/${action._id}`)
                 .then(result => {
                     Global.Loaded();
-                    display.success(`successfully started ${action.name}`)
+                    display.success(`successfully started ${action._id}`)
                     AgentStore.dispatch({
                         type: 'LoadAgentProject',
                         uid: action.uid
@@ -248,10 +215,10 @@ const AgentStore = createStore(function(state = defaultState, action) {
         case 'StopProject':
             Global.Load();
             http
-                .get(`/agent/${action.uid}/stop/${action.pid}`)
+                .get(`/agent/${action.uid}/stop/${action._id}`)
                 .then(result => {
                     Global.Loaded();
-                    display.success(`successfully stopped ${action.pid}`)
+                    display.success(`successfully stopped ${action._id}`)
                     AgentStore.dispatch({
                         type: 'LoadAgentProject',
                         uid: action.uid
@@ -267,10 +234,10 @@ const AgentStore = createStore(function(state = defaultState, action) {
         case 'KillProject':
             Global.Load();
             http
-                .get(`/agent/${action.uid}/kill/${action.name}`)
+                .get(`/agent/${action.uid}/delete/${action._id}`)
                 .then(result => {
                     Global.Loaded();
-                    display.success(`successfully killed ${action.name}`)
+                    display.success(`successfully killed ${action._id}`)
                     AgentStore.dispatch({
                         type: 'LoadAgentProject',
                         uid: action.uid

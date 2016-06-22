@@ -41,10 +41,10 @@ export default class AgentFileList extends React.Component {
             }
         }, {
             title: 'Location',
-            dataIndex: 'name'
+            dataIndex: 'location'
         }, {
             title: 'Name',
-            dataIndex: 'fileName',
+            dataIndex: 'name',
         }, {
             title: 'Created',
             dataIndex: 'createdAt',
@@ -57,9 +57,6 @@ export default class AgentFileList extends React.Component {
             render(createdAt) {
                 return moment(createdAt).format(dateFormat);
             }
-        }, {
-            title: 'Update Count',
-            dataIndex: 'updatedCount'
         }, {
             title: '',
             key: 'x',

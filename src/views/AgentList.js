@@ -25,15 +25,24 @@ export default class AgentList extends React.Component {
         dataIndex: 'name',
     }, {
         title: 'ID',
-        dataIndex: 'uid',
+        dataIndex: '_id',
     }, {
         title: 'IP',
         dataIndex: 'ip',
     }, {
-        title: 'Last Online At',
-        dataIndex: 'lastOnline',
+        title: 'Created At',
+        dataIndex: 'createdAt',
         sorter(a, b) {
-            return a.lastOnline - b.lastOnline;
+            return a.createdAt - b.createdAt;
+        },
+        render(date) {
+            return moment(date).format(dateFormat);
+        }
+    }, {
+        title: 'Updated At',
+        dataIndex: 'updatedAt',
+        sorter(a, b) {
+            return a.updatedAt - b.updatedAt;
         },
         render(date) {
             return moment(date).format(dateFormat);
@@ -55,14 +64,14 @@ export default class AgentList extends React.Component {
         }
     }, {
         title: 'Memory',
-        dataIndex: 'memory',
+        dataIndex: 'info',
         sorter(a, b) {
-            return a.memory.freemem - b.memory.freemem;
+            return a.info.free - b.info.free;
         },
-        render(memory) {
-            if (memory.freemem && memory.totalmem) {
-                return filesize(memory.freemem) +
-                        '/' + filesize(memory.totalmem);
+        render(info) {
+            if (info && info.memory) {
+                return filesize(info.memory.free) +
+                        '/' + filesize(info.memory.total);
             } else {
                 return '';
             }
@@ -78,7 +87,7 @@ export default class AgentList extends React.Component {
                         padding: 5
                     }}>
                     <Button
-                        onClick={e => router.push(`/agent/${node.uid}`)}
+                        onClick={e => router.push(`/agent/${node._id}`)}
                         icon='search'/>
                 </span>
                 <span
@@ -86,7 +95,7 @@ export default class AgentList extends React.Component {
                         padding: 5
                     }}>
                     <Button
-                        onClick={e => router.push(`/deploy/${node.uid}/null`)}
+                        onClick={e => router.push(`/deploy/${node._id}/null`)}
                         icon='plus'/>
                 </span>
                 <span
@@ -94,7 +103,7 @@ export default class AgentList extends React.Component {
                         padding: 5
                     }}>
                     <Button
-                        onClick={e => router.push(`/pushfile/${node.uid}/null/null`)}
+                        onClick={e => router.push(`/pushfile/${node._id}/null/null`)}
                         icon='upload'/>
                 </span>
             </div>

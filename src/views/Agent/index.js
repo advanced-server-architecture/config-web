@@ -54,31 +54,31 @@ export default class Agent extends React.Component {
         const agent = store.get('agent').toJSON();
         const online = agent.online;
         const name = agent.name
-        const uid = agent.uid;
-        const lastOnline = agent.lastOnline;
+        const uid = agent._id;
+        const lastOnline = agent.updatedAt;
 
-        const machine = agent.machine || {
-                            cpu: {
-                                idle: 0,
-                                sys: 0,
-                                user: 0
-                            },
-                            memory: {
-                                free: 0,
-                                total: 0
-                            },
-                            list: [],
-                            process: {
-                                running: 0,
-                                sleeping: 0,
-                                stopped: 0,
-                                total: 0
-                            }
-                        };
-        const processList = machine.list.map((p, key) => ({...p, key}));
-        const process = machine.process;
+        const info = agent.info || {
+            cpu: {
+                idle: 0,
+                sys: 0,
+                user: 0
+            },
+            memory: {
+                free: 0,
+                total: 0
+            },
+            processSummary: {
+                running: 0,
+                sleeping: 0,
+                stopped: 0,
+                total: 0
+            },
+            processList: []
+        };
+        const processList = info.processList.map((p, key) => ({...p, key}));
+        const processSummary = info.processSummary;
 
-        const projectList = (agent.projects || []).map((p, key) => ({...p, key}));
+        const projectList = (agent.projectList || []).map((p, key) => ({...p, key}));
         const logs = agent.logs || [];
         const logSize = agent.logSize || 10;
         const logPage = agent.logPage || 0;
@@ -148,7 +148,7 @@ export default class Agent extends React.Component {
                                     color: '#fff'
                                 }}>Refresh</Button>
                         </Flex>
-                        <Usage cpu={machine.cpu} memory={machine.memory}/>
+                        <Usage cpu={info.cpu} memory={info.memory}/>
                     </Collapse.Panel>
                     <Collapse.Panel
                         key='process'
@@ -159,10 +159,10 @@ export default class Agent extends React.Component {
                                     Processes
                                 </Flex>
                                 <Flex>
-                                    <Tag color='blue'>{process.total} total</Tag>
-                                    <Tag color='green'>{process.running} running</Tag>
-                                    <Tag color='yellow'>{process.sleeping} sleeping</Tag>
-                                    <Tag color='red'>{process.stopped} stopped</Tag>
+                                    <Tag color='blue'>{processSummary.total} total</Tag>
+                                    <Tag color='green'>{processSummary.running} running</Tag>
+                                    <Tag color='yellow'>{processSummary.sleeping} sleeping</Tag>
+                                    <Tag color='red'>{processSummary.stopped} stopped</Tag>
                                 </Flex>
                             </Flex>
                         }>
@@ -177,7 +177,7 @@ export default class Agent extends React.Component {
                         </Flex>
                         <Process
                             data={processList}
-                            totalMemory={machine.memory.total}/>
+                            totalMemory={info.memory.total}/>
                     </Collapse.Panel>
                     <Collapse.Panel
                         key='project'
@@ -199,9 +199,9 @@ export default class Agent extends React.Component {
                                 }}>Add</Button>
                         </Flex>
                         <Project
-                            onStart={data => StartProject(uid, data.name)}
-                            onStop={data => StopProject(uid, data.pid)}
-                            onKill={data => KillProject(uid, data.name)}
+                            onStart={data => StartProject(uid, data._id)}
+                            onStop={data => StopProject(uid, data._id)}
+                            onKill={data => KillProject(uid, data._id)}
                             uid={uid}
                             data={projectList}/>
                     </Collapse.Panel>
@@ -211,7 +211,7 @@ export default class Agent extends React.Component {
                         <Flex
                             margin='0 0 10px 10px'>
                             <Button
-                                onClick={e => LoadAgentProject(this.props.params.id)}
+                                onClick={e => LoadAgentFileList(this.props.params.id)}
                                 style={{
                                     background: '#64B5F6',
                                     color: '#fff'

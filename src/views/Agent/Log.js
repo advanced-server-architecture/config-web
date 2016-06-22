@@ -44,8 +44,8 @@ const Log = (props) => {
             <Flex
                 width={65}>
                 <Tag
-                    style={getStyle(log.level.levelStr)}>
-                    {log.level.levelStr}
+                    style={getStyle(log.level)}>
+                    {log.level}
                 </Tag>
             </Flex>
             <Flex
@@ -55,7 +55,7 @@ const Log = (props) => {
                         color: '#fff',
                         background: '#A1887F'
                     }}>
-                    {moment(log.time).format(dateFormat + '.SSS')}
+                    {moment(log.date).format(dateFormat + '.SSS')}
                 </Tag>
             </Flex>
             <Flex
@@ -65,7 +65,7 @@ const Log = (props) => {
                     color: '#fff',
                     background: '#000'
                 }}>
-                {log.data.trim('\n') || '-'}
+                {log.message.trim('\n') || '-'}
             </Flex>
         </Flex>)}
     </Flex>

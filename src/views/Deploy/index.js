@@ -82,9 +82,9 @@ export default class Deploy extends React.Component {
                         value={state.agentId}>
                         {agentList.map((a, i) => <Radio
                                 key={i}
-                                value={a.uid}
+                                value={a._id}
                                 style={radioStyle}>
-                                {a.name}#{a.uid}
+                                {a.name}#{a._id}
                         </Radio>)}
                     </Radio.Group>
                 </Flex>

@@ -28,7 +28,7 @@ export default class ProjectTable extends React.Component {
             title: 'Name',
             dataIndex: 'name',
             render(name, data) {
-                return <Link to={`project/${data.opts._id}`}>
+                return <Link to={`project/${data._id}`}>
                     {name}</Link>
             }
         }, {
@@ -39,7 +39,10 @@ export default class ProjectTable extends React.Component {
             dataIndex: 'restartCount',
         }, {
             title: 'Commit',
-            dataIndex: 'commit'
+            dataIndex: 'git',
+            render(git) {
+                return git.commit;
+            }
         }, {
             title: 'Created At',
             dataIndex: 'createdAt',
@@ -50,7 +53,7 @@ export default class ProjectTable extends React.Component {
             title: 'Status',
             dataIndex: 'status',
             render(status, data) {
-                if (status === 0) {
+                if (status === 'running') {
                     return <Tag color='green'>{'up ' + moment
                                                 .duration(
                                                     Date.now() - data.updatedAt
@@ -104,7 +107,6 @@ export default class ProjectTable extends React.Component {
                 </div>
             }
         }];
-
         return <Table
             dataSource={props.data}
             columns={columns}

@@ -136,11 +136,15 @@ const FileStore = createStore(function(state = defaultState, action) {
                 });
             return state
                 .set('__lastAction', 'Load');
-        case 'PushFile':
+        case 'PushFile': {
             Global.Load();
+            let body = {};
+            body.ref = action.body.ref;
+            body._id = action.body.id;
+            body.location = action.body.location;
             http
-                .post('/admin/pushfile')
-                .send(action.body)
+                .post(`/agent/${action.body.agentId}/file`)
+                .send(body)
                 .then(result => {
                     Global.Loaded();
                     display.success('file pushed');
@@ -153,6 +157,7 @@ const FileStore = createStore(function(state = defaultState, action) {
                 });
             return state
                 .set('__lastAction', 'Load');
+        }
         default:
             return state;
     }

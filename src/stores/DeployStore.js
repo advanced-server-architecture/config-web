@@ -23,19 +23,23 @@ const defaultState = fromJS({
 const DeployStore = createStore(function(state = defaultState, action) {
     switch (action.type) {
         case 'InitProject': {
-            let body = action.form;
-            body.command = body.command === '' ?
-                    [] : body.command.split('\n');
-            body.argument = body.argument === '' ?
-                    [] : body.argument.split('\n');
+            const form = action.form;
+            let body = {};
+            body._id = form.projectId;
+            body.name = form.name;
+            body.command = form.command === '' ?
+                    [] : form.command.split('\n');
+            body.argument = form.argument === '' ?
+                    [] : form.argument.split('\n');
+
             Global.Load();
             http
-                .post('/admin/init')
+                .post(`/agent/${form.agentId}/project`)
                 .send(body)
                 .then(result => {
                     Global.Loaded();
                     display.success('project inited');
-                    hashHistory.push(`/agent/${body.agentId}`);
+                    hashHistory.push(`/agent/${form.agentId}`);
                 })
                 .catch(err => {
                     Global.Loaded();
@@ -47,12 +51,8 @@ const DeployStore = createStore(function(state = defaultState, action) {
         case 'PullProject':
             Global.Load();
             http
-                .post('/admin/pull')
-                .send({
-                    agentId: action.agentId,
-                    name: action.name,
-                    commit: action.commit
-                })
+                .put(`/agent/${action.agentId}/project/${action.projectId}/${action.commit}`)
+                .send({})
                 .then(result => {
                     Global.Loaded();
                     display.success('project pulled');

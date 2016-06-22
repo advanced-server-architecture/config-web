@@ -6,10 +6,10 @@ export const InitProject = (form) =>
         form
     });
 
-export const PullProject = (agentId, name, commit) =>
+export const PullProject = (agentId, projectId, commit) =>
     DeployStore.dispatch({
         type: 'PullProject',
         agentId,
-        name,
+        projectId,
         commit
     });

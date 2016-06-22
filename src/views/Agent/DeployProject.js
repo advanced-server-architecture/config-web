@@ -18,7 +18,7 @@ export default class DeployProject extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            commit: props.data.commit
+            commit: props.data.git.commit
         };
     }
 
@@ -28,7 +28,7 @@ export default class DeployProject extends React.Component {
 
     render() {
         const data = this.props.data;
-        const opts = data.opts;
+        const git = data.git;
         const commitList = _.sortBy(GithubStore
                 .getState()
                 .get('commitList')
@@ -38,7 +38,7 @@ export default class DeployProject extends React.Component {
             <Flex
                 width={120}>
                 <Button
-                    onClick={e => Github.LoadCommitList(opts.accessToken, opts.repo)}>
+                    onClick={e => Github.LoadCommitList(git.accessToken, git.repo)}>
                     Load Commits
                 </Button>
             </Flex>
@@ -64,7 +64,7 @@ export default class DeployProject extends React.Component {
                 margin='0 0 0 10px'
                 width={100}>
                 <Button
-                    onClick={e => Deploy.PullProject(this.props.uid, data.name, this.state.commit)}>
+                    onClick={e => Deploy.PullProject(this.props.uid, data._id, this.state.commit)}>
                     Pull
                 </Button>
             </Flex>
